@@ -172,21 +172,47 @@
     <ClCompile Include="..\src\varintdecode.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\binarypacking.h" />
     <ClInclude Include="..\include\bitpacking.h" />
     <ClInclude Include="..\include\bitpackinghelpers.h" />
+    <ClInclude Include="..\include\boolarray.h" />
+    <ClInclude Include="..\include\codecfactory.h" />
     <ClInclude Include="..\include\codecs.h" />
     <ClInclude Include="..\include\common.h" />
+    <ClInclude Include="..\include\compositecodec.h" />
+    <ClInclude Include="..\include\cpubenchmark.h" />
     <ClInclude Include="..\include\delta.h" />
     <ClInclude Include="..\include\deltatemplates.h" />
+    <ClInclude Include="..\include\deltautil.h" />
+    <ClInclude Include="..\include\entropy.h" />
+    <ClInclude Include="..\include\fastpfor.h" />
     <ClInclude Include="..\include\for.h" />
+    <ClInclude Include="..\include\forcodec.h" />
     <ClInclude Include="..\include\frameofreference.h" />
+    <ClInclude Include="..\include\hybm2.h" />
     <ClInclude Include="..\include\integratedbitpacking.h" />
     <ClInclude Include="..\include\intersection.h" />
+    <ClInclude Include="..\include\memutil.h" />
+    <ClInclude Include="..\include\mersenne.h" />
     <ClInclude Include="..\include\platform.h" />
+    <ClInclude Include="..\include\simdbinarypacking.h" />
     <ClInclude Include="..\include\simdbitpacking.h" />
     <ClInclude Include="..\include\simdbitpackinghelpers.h" />
+    <ClInclude Include="..\include\simdfastpfor.h" />
     <ClInclude Include="..\include\simdintegratedbitpacking.h" />
+    <ClInclude Include="..\include\simdvariablebyte.h" />
+    <ClInclude Include="..\include\skipping.h" />
+    <ClInclude Include="..\include\sortedbitpacking.h" />
+    <ClInclude Include="..\include\streamvariablebyte.h" />
+    <ClInclude Include="..\include\stringutil.h" />
+    <ClInclude Include="..\include\synthetic.h" />
+    <ClInclude Include="..\include\timer.h" />
     <ClInclude Include="..\include\usimdbitpacking.h" />
+    <ClInclude Include="..\include\util.h" />
+    <ClInclude Include="..\include\variablebyte.h" />
+    <ClInclude Include="..\include\VarIntG8IU.h" />
+    <ClInclude Include="..\include\varintgb.h" />
+    <ClInclude Include="..\include\ztimer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

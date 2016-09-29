@@ -22,10 +22,12 @@
 #ifdef _MSC_VER
 #include <intrin.h>
 
+/*
 uint32_t __inline __builtin_clz(uint32_t value) {
   unsigned long leading_zero = 0;
   return _BitScanReverse(&leading_zero, value) == 0 ? 0 : (31 - leading_zero);
 }
+*/
 
 uint32_t __inline __builtin_ctz(uint32_t value) {
   unsigned long trailing_zero = 0;

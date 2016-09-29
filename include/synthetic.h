@@ -13,6 +13,7 @@
 #include "mersenne.h"
 #include "intersection.h"
 #include "boolarray.h"
+#include "memutil.h"
 
 namespace SIMDCompressionLib {
 
@@ -37,6 +38,49 @@ class UniformDataGenerator {
 public:
   UniformDataGenerator(uint32_t seed = static_cast<uint32_t>(time(NULL)))
       : rand(seed) {}
+
+  /**
+  * fill the vector with N numbers uniformly picked from  from 0 to Max, not
+  * including Max
+  * if it is not possible, an exception is thrown
+  */
+  std::vector<uint32_t, cacheallocator> generateUniform(uint32_t N,
+	  uint32_t Max) {
+	  if (Max < N)
+		  throw std::runtime_error(
+			  "can't generate enough distinct elements in small interval");
+	  std::vector<uint32_t, cacheallocator> ans;
+	  if (N == 0)
+		  return ans; // nothing to do
+	  ans.reserve(N);
+	  assert(Max >= 1);
+
+	  if (2 * N > Max) {
+		  std::set<uint32_t> s;
+		  while (s.size() < Max - N)
+			  s.insert(rand.getValue(Max - 1));
+		  s.insert(Max);
+		  ans.resize(N);
+		  uint32_t i = 0;
+		  size_t c = 0;
+		  for (uint32_t v : s) {
+			  for (; i < v; ++i)
+				  ans[c++] = i;
+			  ++i;
+		  }
+		  assert(c == ans.size());
+	  }
+	  else {
+		  std::set<uint32_t> s;
+		  while (s.size() < N)
+			  s.insert(rand.getValue(Max - 1));
+		  ans.assign(s.begin(), s.end());
+		  assert(N == ans.size());
+	  }
+	  return ans;
+  }
+  
+
 
   void negate(vector<uint32_t> &in, vector<uint32_t> &out, uint32_t Max) {
     out.resize(Max - in.size());
@@ -169,15 +213,21 @@ public:
   }
 
   // Max value is excluded from range
-  vector<uint32_t> generate(uint32_t N, uint32_t Max) {
+  vector<uint32_t, cacheallocator> generate(uint32_t N, uint32_t Max) {
     return generateClustered(N, Max);
   }
 
   // Max value is excluded from range
-  vector<uint32_t> generateClustered(uint32_t N, uint32_t Max) {
-    vector<uint32_t> ans(N);
+  vector<uint32_t, cacheallocator> generateClustered(uint32_t N, uint32_t Max) {
+	  vector<uint32_t, cacheallocator> ans(N);
     fillClustered(ans.begin(), ans.end(), 0, Max);
     return ans;
+  }
+
+  vector<uint32_t> generateClusteredNormal(uint32_t N, uint32_t Max) {
+	  vector<uint32_t> ans(N);
+	  fillClustered(ans.begin(), ans.end(), 0, Max);
+	  return ans;
   }
 };
 
@@ -231,9 +281,9 @@ public:
   }
 };
 
-vector<uint32_t> generateZipfianArray32(uint32_t N, double power,
+vector<uint32_t, cacheallocator> generateZipfianArray32(uint32_t N, double power,
                                         const uint32_t mask = 0xFFFFFFFFU) {
-  vector<uint32_t> ans(N);
+	vector<uint32_t, cacheallocator> ans(N);
   ZipfianGenerator zipf;
   const uint32_t MAXVALUE = 1U << 22;
   zipf.init(mask > MAXVALUE - 1 ? MAXVALUE : mask + 1, power);

@@ -47,7 +47,8 @@ static std::map<string, shared_ptr<IntegerCODEC>> initializefactory() {
   schemes["varint"] = shared_ptr<IntegerCODEC>(new VariableByte<true>());
   schemes["vbyte"] = shared_ptr<IntegerCODEC>(new VByte<true>());
   schemes["maskedvbyte"] = shared_ptr<IntegerCODEC>(new MaskedVByte<true>());
-  schemes["streamvbyte"] = shared_ptr<IntegerCODEC>(new StreamVByteD1());
+  schemes["streamvbyted1"] = shared_ptr<IntegerCODEC>(new StreamVByteD1());
+  //schemes["streamvbyte"] = shared_ptr<IntegerCODEC>(new StreamVByte());
   schemes["frameofreference"] =
       shared_ptr<IntegerCODEC>(new FrameOfReference());
 

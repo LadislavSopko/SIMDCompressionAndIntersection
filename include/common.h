@@ -44,6 +44,9 @@
 #include <memory>
 #include <unordered_set>
 #include <vector>
+#include <cstdint>
+#include <memory>
+#include <unordered_map>
 
 #include "platform.h"
 
@@ -54,6 +57,10 @@
 #define MM_LOAD_SI_128 _mm_loadu_si128
 #define MM_STORE_SI_128 _mm_storeu_si128
 #endif
+
+#define __attribute__(n)
+
+//#define constexpr inline
 
 namespace SIMDCompressionLib {} // namespace SIMDCompressionLib
 

@@ -1,5 +1,20 @@
 #include "frameofreference.h"
 
+
+#ifdef _MSC_VER
+#define INLINE __inline
+#include <intrin.h>
+
+uint32_t __inline CLZ(uint32_t value) {
+	unsigned long leading_zero = 0;
+	_BitScanReverse(&leading_zero, value);
+	return 31 - leading_zero;
+}
+#else
+#define INLINE inline
+#define CLZ __builtin_clz
+#endif
+
 static __m128i *simdpackFOR_length(uint32_t initvalue, const uint32_t *in,
                                    int length, __m128i *out,
                                    const uint32_t bit) {
@@ -7350,7 +7365,7 @@ static packfnc pack32[33] = {
     pack30_32,  pack31_32, pack32_32};
 
 static uint32_t bits(const uint32_t v) {
-  return v == 0 ? 0 : 32 - __builtin_clz(v);
+  return v == 0 ? 0 : 32 - CLZ(v);
 }
 
 uint32_t *SIMDCompressionLib::FrameOfReference::compress_length(

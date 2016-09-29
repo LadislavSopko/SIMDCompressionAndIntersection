@@ -4,6 +4,10 @@
 #include "common.h"
 #include "codecs.h"
 
+#ifdef _MSC_VER
+#undef max
+#endif
+
 namespace SIMDCompressionLib {
 
 /**
@@ -13,6 +17,7 @@ namespace SIMDCompressionLib {
 extern "C" {
 uint64_t svb_encode(uint8_t *out, const uint32_t *in, uint32_t count, int delta,
                     int type);
+uint64_t svb_decode(uint32_t *out, uint8_t *in, int delta, int type);
 uint8_t *svb_decode_avx_simple(uint32_t *out, uint8_t *keyPtr, uint8_t *dataPtr,
                                uint64_t count);
 uint8_t *svb_decode_avx_d1_simple(uint32_t *out, uint8_t *keyPtr,
@@ -48,7 +53,16 @@ public:
 
   const uint32_t *decodeArray(const uint32_t *in, const size_t /* count */,
                               uint32_t *out, size_t &nvalue) {
-    uint32_t count = *(uint32_t *)in; // first 4 bytes is number of ints
+    
+	  uint8_t* ptr;
+	  (uint64_t)(*(uint64_t*)(&ptr)) = svb_decode(out, (uint8_t *)in, 0, 5);
+
+	  return reinterpret_cast<const uint32_t *>(
+		  (reinterpret_cast<uintptr_t>(ptr) +
+			  3) &
+		  ~3);
+	/*  
+	  uint32_t count = *(uint32_t *)in; // first 4 bytes is number of ints
     nvalue = count;
     if (count == 0)
       return 0;
@@ -62,6 +76,7 @@ public:
              svb_decode_avx_simple(out, keyPtr, dataPtr, count)) +
          3) &
         ~3);
+		*/
   }
 
   std::string name() const { return "streamvbyte"; }
@@ -96,7 +111,16 @@ public:
 
   const uint32_t *decodeArray(const uint32_t *in, const size_t /* count */,
                               uint32_t *out, size_t &nvalue) {
-    ++in;                             // number of encoded bytes
+	  ++in;
+	  uint8_t* ptr;
+	  (uint64_t)(*(uint64_t*)(&ptr)) = svb_decode(out, (uint8_t *)in, 1, 5);
+
+	  return reinterpret_cast<const uint32_t *>(
+		  (reinterpret_cast<uintptr_t>(ptr) +
+			  3) &
+		  ~3);
+	  /*
+	  ++in;                             // number of encoded bytes
     uint32_t count = *(uint32_t *)in; // next 4 bytes is number of ints
     nvalue = count;
     if (count == 0)
@@ -109,7 +133,7 @@ public:
         (reinterpret_cast<uintptr_t>(
              svb_decode_avx_d1_simple(out, keyPtr, dataPtr, count)) +
          3) &
-        ~3);
+        ~3);*/
   }
 
   const uint8_t *decodeFromByteArray(const uint8_t *in,

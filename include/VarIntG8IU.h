@@ -17,6 +17,18 @@
 #define PREDICT_FALSE(x) x
 #endif
 
+#ifdef _MSC_VER
+#include <intrin.h>
+uint32_t __inline CLZ(uint32_t value) {
+	unsigned long leading_zero = 0;
+	_BitScanReverse(&leading_zero, value);
+	return 31 - leading_zero;
+}
+#else
+#define INLINE inline
+#define CLZ __builtin_clz
+#endif
+
 namespace SIMDCompressionLib {
 /**
  *
@@ -229,7 +241,7 @@ private:
   __m128i vecmask[256][2];
 
   int getNumByteNeeded(const uint32_t val) {
-    return ((__builtin_clz(val | 255) ^ 31) >> 3) + 1;
+    return ((CLZ(val | 255) ^ 31) >> 3) + 1;
   }
 };
 }

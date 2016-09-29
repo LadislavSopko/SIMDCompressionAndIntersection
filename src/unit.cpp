@@ -119,7 +119,7 @@ void unit(bool deltacode, vector<shared_ptr<IntegerCODEC>> &allcodecs,
   for (uint32_t gap = 1; gap + S <= 31; gap += 1) {
     for (uint32_t T = 0; T < NUMBER; ++T) {
       dataarray X;
-      X.data = cdg.generateClustered(N, 1U << (gap + S));
+      X.data = cdg.generateClusteredNormal(N, 1U << (gap + S));
 
       if (deltacode)
         delta(0u, X.data.data(), X.data.size());
