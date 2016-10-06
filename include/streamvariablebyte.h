@@ -93,7 +93,7 @@ public:
         svb_encode((uint8_t *)(out + 1), in,
                    static_cast<uint32_t>(std::min<size_t>(
                        count, std::numeric_limits<uint32_t>::max())),
-                   1, 1));
+                   1, 5));
     *out = 4 + bytesWritten;
     nvalue = 1 + (bytesWritten + 3) / 4;
   }

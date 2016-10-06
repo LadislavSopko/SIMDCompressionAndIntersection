@@ -12,3 +12,9 @@ testintegration
 uncompress
 unit
 *.a
+
+Gen/x64/Debug
+msvc/SIMDCompressionAndIntersection.VC.db
+*.vspx
+msvc/SIMDCompressionAndIntersection.VC.db
+*.VC.db

@@ -977,8 +977,12 @@ int main(int argc, char **argv) {
         UniformDataGenerator clu;
         for (uint32_t K = 15; K <= 25; K += 5) {
           vector<vector<uint32_t, cacheallocator>> datas;
-          for (uint32_t k = 0; k < (1U << (25 - K)); ++k)
-            datas.push_back(clu.generateUniform((1U << K), 1U << 29));
+		  for (uint32_t k = 0; k < (1U << (25 - K)); ++k) {
+#if defined(_DEBUG)
+			  if(k == 0)
+#endif
+				datas.push_back(clu.generateUniform((1U << K), 1U << 29));
+		  }
           cout << "# generated " << datas.size() << " arrays" << endl;
           cout << "# their size is  " << (1U << K) << endl;
           const uint32_t p = 29 - K;
