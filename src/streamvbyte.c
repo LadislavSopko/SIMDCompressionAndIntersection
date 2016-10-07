@@ -88,29 +88,6 @@ static inline uint8_t _encode_data(uint32_t val,
   }
 }
 
-static inline void _encode_data_v(uint32_t val,
-									uint8_t *__restrict__ *dataPtrPtr) {
-	uint8_t *dataPtr = *dataPtrPtr;
-	
-	if (val < (1 << 8)) { // 1 byte
-		*dataPtr = (uint8_t)(val);
-		*dataPtrPtr = dataPtr + 1;
-	}
-	else if (val < (1 << 16)) { // 2 bytes
-		*(uint16_t *)dataPtr = (uint16_t)(val);
-		*dataPtrPtr = dataPtr + 2;
-	}
-	else if (val < (1 << 24)) { // 3 bytes
-		*(uint16_t *)dataPtr = (uint16_t)(val);
-		*(dataPtr + 2) = (uint8_t)(val >> 16);
-		*dataPtrPtr = dataPtr + 3;
-	}
-	else { // 4 bytes
-		*(uint32_t *)dataPtr = val;
-		*dataPtrPtr = dataPtr + 4;
-	}
-}
-
 uint8_t *svb_encode_scalar_d1_init(const uint32_t *in,
                                    uint8_t *__restrict__ keyPtr,
                                    uint8_t *__restrict__ dataPtr,
@@ -142,7 +119,7 @@ uint8_t *svb_encode_scalar_d1(const uint32_t *in, uint8_t *__restrict__ keyPtr,
 	return svb_encode_scalar_d1_init(in, keyPtr, dataPtr, count, 0);
 }
 
-static uint8_t lengthTable[256] = {
+static SIMDCOMP_ALIGNED(16) uint8_t lengthTable[256] = {
 	4,  5,  6,  7,  5,  6,  7,  8,  6,  7,  8,  9,  7,  8,  9,  10, 5,  6,  7,
 	8,  6,  7,  8,  9,  7,  8,  9,  10, 8,  9,  10, 11, 6,  7,  8,  9,  7,  8,
 	9,  10, 8,  9,  10, 11, 9,  10, 11, 12, 7,  8,  9,  10, 8,  9,  10, 11, 9,
@@ -424,76 +401,122 @@ uint8_t *svb_encode_avx_d1_init(const uint32_t *in,
 	if (count == 0)
 		return dataPtr; // exit immediately if no data
 
-	//uint8_t * tmpdata = (uint8_t*)calloc(1024 * 1024, 1);
-
-	
-
-
-
 	uint32_t ix = 0;
 
 	__m128i *pCurr = (__m128i *)(in);
 	const __m128i *pEnd = pCurr + (count >> 2);
+	const __m128i *pEnd2 = pEnd - 1;
+
 	__m128i last = _mm_setzero_si128();
 	__m128i a0;
 	__m128i a1;
+	__m128i a00;
+	__m128i a11;
+	uint8_t mask;
+	uint8_t maskmask;
 
-	while (pCurr < pEnd) {
-		a0 = _mm_load_si128(pCurr++);
+	//8 ints in row
+	while (pCurr < pEnd2) {
+		_mm_prefetch(pCurr, _MM_HINT_T0);
+		a0 = _mm_load_si128(pCurr++);  // first 4
+		_mm_prefetch(pCurr, _MM_HINT_T0);
+		a00 = _mm_load_si128(pCurr++); // next 4
+
+		//first delta
 		a1 = _mm_sub_epi32(a0, _mm_srli_si128(last, 12));
 		//now we have 4 deltas here
 		a1 = _mm_sub_epi32(a1, _mm_slli_si128(a0, 4));
 
-		//number of empty bytes
-		keyPtr[ix] =
-			((0b00000011 & (~(__lzcnt(a1.m128i_u32[0]) >> 3)))     ) |
-			((0b00000011 & (~(__lzcnt(a1.m128i_u32[1]) >> 3))) << 2) |
-			((0b00000011 & (~(__lzcnt(a1.m128i_u32[2]) >> 3))) << 4) |
-			((0b00000011 & (~(__lzcnt(a1.m128i_u32[3]) >> 3))) << 6);
-		/*
-		uint8_t bb0 = (~(__lzcnt(a1.m128i_u32[0]) >> 3));
-		uint8_t bb1 = (~(__lzcnt(a1.m128i_u32[1]) >> 3));
-		uint8_t bb2 = (~(__lzcnt(a1.m128i_u32[2]) >> 3));
-		uint8_t bb3 = (~(__lzcnt(a1.m128i_u32[3]) >> 3));
+		//second delta  last <=> a0
+		a11 = _mm_sub_epi32(a00, _mm_srli_si128(a0, 12));
+		//now we have 4 deltas here
+		a11 = _mm_sub_epi32(a11, _mm_slli_si128(a00, 4));
 
-		uint8_t b0 = (0b00000011 & (~(__lzcnt(a1.m128i_u32[0]) >> 3)));
-		uint8_t b1 = (0b00000011 & (~(__lzcnt(a1.m128i_u32[1]) >> 3)));
-		uint8_t b2 = (0b00000011 & (~(__lzcnt(a1.m128i_u32[2]) >> 3)));
-		uint8_t b3 = (0b00000011 & (~(__lzcnt(a1.m128i_u32[3]) >> 3)));
-		*/
-		/*
-		_encode_data_v(a1.m128i_u32[0], &dataPtr);
-		_encode_data_v(a1.m128i_u32[1], &dataPtr);
-		_encode_data_v(a1.m128i_u32[2], &dataPtr);
-		_encode_data_v(a1.m128i_u32[3], &dataPtr);
-		*/
+		// make mask using number of leading zero bits in each from next 4 ints
+		// lzcnt / 8 => nuber of empty leading bytes
+		mask = ~(
+			(((uint8_t)__lzcnt(a1.m128i_u32[0]) >> 3) & 0b00000011) |
+			(((uint8_t)__lzcnt(a1.m128i_u32[1]) >> 1) & 0b00001100) |
+			(((uint8_t)__lzcnt(a1.m128i_u32[2]) << 1) & 0b00110000) |
+			(((uint8_t)__lzcnt(a1.m128i_u32[3]) << 3) & 0b11000000)
+			);
+
+		maskmask = ~(
+			(((uint8_t)__lzcnt(a11.m128i_u32[0]) >> 3) & 0b00000011) |
+			(((uint8_t)__lzcnt(a11.m128i_u32[1]) >> 1) & 0b00001100) |
+			(((uint8_t)__lzcnt(a11.m128i_u32[2]) << 1) & 0b00110000) |
+			(((uint8_t)__lzcnt(a11.m128i_u32[3]) << 3) & 0b11000000)
+			);
+
+		// shuffle next 4 ints removing empty bytes and use 
+		// we have 256 different masks so we use shuffle encoding table
+		_mm_storeu_si128(
+			(__m128i *)dataPtr,
+			_mm_shuffle_epi8(
+				a1,
+				*(xmm_t *)&shuffleTabEncode[mask]
+			)
+		);
+		// move to next not used byte
+		dataPtr += lengthTable[mask];
+
+			
+		// shuffle next 4 ints removing empty bytes and use 
+		// we have 256 different masks so we use shuffle encoding table
+		_mm_storeu_si128(
+			(__m128i *)dataPtr,
+			_mm_shuffle_epi8(
+				a11,
+				*(xmm_t *)&shuffleTabEncode[maskmask]
+			)
+		);
+		// move to next not used byte
+		dataPtr += lengthTable[maskmask];
+
+		// save mask
+		keyPtr[ix++] = mask;
+		keyPtr[ix++] = maskmask;
+
+		// next last for delta
+		last = a00;
+	}
+
+	//eventual next 4
+	while (pCurr < pEnd) {
+		_mm_prefetch(pCurr, _MM_HINT_T0);
+		a0 = _mm_load_si128(pCurr++); 
+		a1 = _mm_sub_epi32(a0, _mm_srli_si128(last, 12));
+		//now we have 4 deltas here
+		a1 = _mm_sub_epi32(a1, _mm_slli_si128(a0, 4));
+
+		// make mask using number of leading zero bits in each from next 4 ints
+		// lzcnt / 8 => nuber of empty leading bytes
+		mask = ~(
+			(((uint8_t)__lzcnt(a1.m128i_u32[0]) >> 3) & 0b00000011) |
+			(((uint8_t)__lzcnt(a1.m128i_u32[1]) >> 1) & 0b00001100) |
+			(((uint8_t)__lzcnt(a1.m128i_u32[2]) << 1) & 0b00110000) |
+			(((uint8_t)__lzcnt(a1.m128i_u32[3]) << 3) & 0b11000000)
+		);		
+		
+		// shuffle next 4 ints removing empty bytes and use 
+		// we have 256 different masks so we use shuffle encoding table
 		_mm_storeu_si128(
 			(__m128i *)dataPtr, 
 			_mm_shuffle_epi8(
 					a1, 
-					*(xmm_t *)&shuffleTabEncode[keyPtr[ix]]
+					*(xmm_t *)&shuffleTabEncode[mask]
 			)
 		);
-		dataPtr += lengthTable[keyPtr[ix++]];
-
-		/*
-		uint8_t check =
-			_encode_data(a1.m128i_u32[0], &dataPtr) |
-			(_encode_data(a1.m128i_u32[1], &dataPtr) << 2) |
-			(_encode_data(a1.m128i_u32[2], &dataPtr) << 4) |
-			(_encode_data(a1.m128i_u32[3], &dataPtr) << 6);
-
-		if (keyPtr[ix++] != check) {
-			int stop = 0;
-		}
-		*/
+		// move to next not used byte
+		dataPtr += lengthTable[mask];
+		// save mask
+		keyPtr[ix++] = mask;
 		
+		// next last for delta
 		last = a0;
-		//++pCurr; //go to the next
-				 //_mm_store_si128(pCurr++, a1);
 	}
 
-	// resting 0|1|2 numbers
+	// resting less then 4
 	uint32_t c = count & 0xfffffffc;
 	if (c < count) {
 		static uint8_t shlTbl[4] = { 0, 2, 4, 6 };
@@ -721,7 +744,7 @@ uint8_t *svb_decode_scalar(uint32_t *outPtr, const uint8_t *keyPtr,
 
 
 
-static uint8_t shuffleTable[256][16] = {
+static SIMDCOMP_ALIGNED(16) uint8_t shuffleTable[256][16] = {
     {0, -1, -1, -1, 1, -1, -1, -1, 2, -1, -1, -1, 3, -1, -1, -1}, // 1111
     {0, 1, -1, -1, 2, -1, -1, -1, 3, -1, -1, -1, 4, -1, -1, -1},  // 2111
     {0, 1, 2, -1, 3, -1, -1, -1, 4, -1, -1, -1, 5, -1, -1, -1},   // 3111

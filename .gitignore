@@ -18,3 +18,6 @@ msvc/SIMDCompressionAndIntersection.VC.db
 *.vspx
 msvc/SIMDCompressionAndIntersection.VC.db
 *.VC.db
+msvc/SIMDCompressionAndIntersection.VC.db
+*.db
+Gen/x64/Release/*
