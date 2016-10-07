@@ -394,6 +394,15 @@ static SIMDCOMP_ALIGNED(16) uint8_t shuffleTabEncode[256][16] = {
 	{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }
 };
 
+#define COMPUTE_DELTA(_l, _c, _d) _d = _mm_sub_epi32(_c, _mm_srli_si128(_l, 12)); _d = _mm_sub_epi32(_d, _mm_slli_si128(_c, 4));
+#define COMPUTE_MASK_1(__i128r_) ((((uint8_t)__lzcnt(__i128r_.m128i_u32[0]) >> 3) & 0b00000011) |\
+(((uint8_t)__lzcnt(__i128r_.m128i_u32[1]) >> 1) & 0b00001100) |\
+(((uint8_t)__lzcnt(__i128r_.m128i_u32[2]) << 1) & 0b00110000) |\
+(((uint8_t)__lzcnt(__i128r_.m128i_u32[3]) << 3) & 0b11000000))
+#define COMPUTE_MASK(__i128r_) ~(COMPUTE_MASK_1(__i128r_))
+#define COMPUTE_ENCODE(_src, _dest, _mask) _mm_storeu_si128((__m128i *)_dest, _mm_shuffle_epi8(_src, *(xmm_t *)&shuffleTabEncode[_mask]));
+
+
 uint8_t *svb_encode_avx_d1_init(const uint32_t *in,
 	uint8_t *__restrict__ keyPtr,
 	uint8_t *__restrict__ dataPtr,
@@ -405,115 +414,103 @@ uint8_t *svb_encode_avx_d1_init(const uint32_t *in,
 
 	__m128i *pCurr = (__m128i *)(in);
 	const __m128i *pEnd = pCurr + (count >> 2);
-	const __m128i *pEnd2 = pEnd - 1;
+	const __m128i *pEnd2 = pEnd - 4;
 
 	__m128i last = _mm_setzero_si128();
-	__m128i a0;
-	__m128i a1;
 	__m128i a00;
-	__m128i a11;
+	__m128i a01;
+	__m128i a02;
+	__m128i a03;
+
+	__m128i a1;
+	
 	uint8_t mask;
-	uint8_t maskmask;
+	
 
 	//8 ints in row
 	while (pCurr < pEnd2) {
-		_mm_prefetch(pCurr, _MM_HINT_T0);
-		a0 = _mm_load_si128(pCurr++);  // first 4
-		_mm_prefetch(pCurr, _MM_HINT_T0);
-		a00 = _mm_load_si128(pCurr++); // next 4
+		_mm_prefetch(pCurr, _MM_HINT_T0); // PREFETCH 64 BYTES
+		a00 = _mm_load_si128(pCurr++); // first 4
+		a01 = _mm_load_si128(pCurr++); // next 4
+		a02 = _mm_load_si128(pCurr++); // next 4
+		a03 = _mm_load_si128(pCurr++); // next 4
 
-		//first delta
-		a1 = _mm_sub_epi32(a0, _mm_srli_si128(last, 12));
-		//now we have 4 deltas here
-		a1 = _mm_sub_epi32(a1, _mm_slli_si128(a0, 4));
-
-		//second delta  last <=> a0
-		a11 = _mm_sub_epi32(a00, _mm_srli_si128(a0, 12));
-		//now we have 4 deltas here
-		a11 = _mm_sub_epi32(a11, _mm_slli_si128(a00, 4));
-
+		//I
+		COMPUTE_DELTA(last, a00, a1);
 		// make mask using number of leading zero bits in each from next 4 ints
 		// lzcnt / 8 => nuber of empty leading bytes
-		mask = ~(
-			(((uint8_t)__lzcnt(a1.m128i_u32[0]) >> 3) & 0b00000011) |
-			(((uint8_t)__lzcnt(a1.m128i_u32[1]) >> 1) & 0b00001100) |
-			(((uint8_t)__lzcnt(a1.m128i_u32[2]) << 1) & 0b00110000) |
-			(((uint8_t)__lzcnt(a1.m128i_u32[3]) << 3) & 0b11000000)
-			);
-
-		maskmask = ~(
-			(((uint8_t)__lzcnt(a11.m128i_u32[0]) >> 3) & 0b00000011) |
-			(((uint8_t)__lzcnt(a11.m128i_u32[1]) >> 1) & 0b00001100) |
-			(((uint8_t)__lzcnt(a11.m128i_u32[2]) << 1) & 0b00110000) |
-			(((uint8_t)__lzcnt(a11.m128i_u32[3]) << 3) & 0b11000000)
-			);
-
+		mask = COMPUTE_MASK(a1);
 		// shuffle next 4 ints removing empty bytes and use 
 		// we have 256 different masks so we use shuffle encoding table
-		_mm_storeu_si128(
-			(__m128i *)dataPtr,
-			_mm_shuffle_epi8(
-				a1,
-				*(xmm_t *)&shuffleTabEncode[mask]
-			)
-		);
+		COMPUTE_ENCODE(a1, dataPtr, mask);
 		// move to next not used byte
-		dataPtr += lengthTable[mask];
-
-			
-		// shuffle next 4 ints removing empty bytes and use 
-		// we have 256 different masks so we use shuffle encoding table
-		_mm_storeu_si128(
-			(__m128i *)dataPtr,
-			_mm_shuffle_epi8(
-				a11,
-				*(xmm_t *)&shuffleTabEncode[maskmask]
-			)
-		);
-		// move to next not used byte
-		dataPtr += lengthTable[maskmask];
-
+		dataPtr += lengthTable[mask];		
 		// save mask
 		keyPtr[ix++] = mask;
-		keyPtr[ix++] = maskmask;
+
+		//II
+		COMPUTE_DELTA(a00, a01, a1);
+		// make mask using number of leading zero bits in each from next 4 ints
+		// lzcnt / 8 => nuber of empty leading bytes
+		mask = COMPUTE_MASK(a1);
+		// shuffle next 4 ints removing empty bytes and use 
+		// we have 256 different masks so we use shuffle encoding table
+		COMPUTE_ENCODE(a1, dataPtr, mask);
+		// move to next not used byte
+		dataPtr += lengthTable[mask];
+		// save mask
+		keyPtr[ix++] = mask;
+
+		//III
+		COMPUTE_DELTA(a01, a02, a1);
+		// make mask using number of leading zero bits in each from next 4 ints
+		// lzcnt / 8 => nuber of empty leading bytes
+		mask = COMPUTE_MASK(a1);
+		// shuffle next 4 ints removing empty bytes and use 
+		// we have 256 different masks so we use shuffle encoding table
+		COMPUTE_ENCODE(a1, dataPtr, mask);
+		// move to next not used byte
+		dataPtr += lengthTable[mask];
+		// save mask
+		keyPtr[ix++] = mask;
+
+		//III
+		COMPUTE_DELTA(a02, a03, a1);
+		// make mask using number of leading zero bits in each from next 4 ints
+		// lzcnt / 8 => nuber of empty leading bytes
+		mask = COMPUTE_MASK(a1);
+		// shuffle next 4 ints removing empty bytes and use 
+		// we have 256 different masks so we use shuffle encoding table
+		COMPUTE_ENCODE(a1, dataPtr, mask);
+		// move to next not used byte
+		dataPtr += lengthTable[mask];
+		// save mask
+		keyPtr[ix++] = mask;
+		
 
 		// next last for delta
-		last = a00;
+		last = a03;
 	}
 
 	//eventual next 4
 	while (pCurr < pEnd) {
 		_mm_prefetch(pCurr, _MM_HINT_T0);
-		a0 = _mm_load_si128(pCurr++); 
-		a1 = _mm_sub_epi32(a0, _mm_srli_si128(last, 12));
-		//now we have 4 deltas here
-		a1 = _mm_sub_epi32(a1, _mm_slli_si128(a0, 4));
+		a00 = _mm_load_si128(pCurr++); 
 
+		COMPUTE_DELTA(last, a00, a1);
 		// make mask using number of leading zero bits in each from next 4 ints
 		// lzcnt / 8 => nuber of empty leading bytes
-		mask = ~(
-			(((uint8_t)__lzcnt(a1.m128i_u32[0]) >> 3) & 0b00000011) |
-			(((uint8_t)__lzcnt(a1.m128i_u32[1]) >> 1) & 0b00001100) |
-			(((uint8_t)__lzcnt(a1.m128i_u32[2]) << 1) & 0b00110000) |
-			(((uint8_t)__lzcnt(a1.m128i_u32[3]) << 3) & 0b11000000)
-		);		
-		
+		mask = COMPUTE_MASK(a1);		
 		// shuffle next 4 ints removing empty bytes and use 
 		// we have 256 different masks so we use shuffle encoding table
-		_mm_storeu_si128(
-			(__m128i *)dataPtr, 
-			_mm_shuffle_epi8(
-					a1, 
-					*(xmm_t *)&shuffleTabEncode[mask]
-			)
-		);
+		COMPUTE_ENCODE(a1, dataPtr, mask);
 		// move to next not used byte
 		dataPtr += lengthTable[mask];
 		// save mask
 		keyPtr[ix++] = mask;
 		
 		// next last for delta
-		last = a0;
+		last = a00;
 	}
 
 	// resting less then 4
