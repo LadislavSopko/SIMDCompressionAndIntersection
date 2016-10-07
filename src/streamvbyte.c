@@ -1086,6 +1086,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
   if (keybytes >= 8) {
     xmm_t Prev = _mm_set1_epi32(prev);
     xmm_t Data;
+	
 
     int64_t Offset = -(int64_t)keybytes / 8 + 1;
 
@@ -1110,7 +1111,11 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
         continue;
       }
 
-      Data = _decode_avx(keys & 0x00FF, &dataPtr);
+	  // next two lines slows down? who knows why, maybe to much miss hits
+	  _mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES - it should hold ~ 32 compressed integers
+	  _mm_prefetch(keys, _MM_HINT_T0); 
+
+	  Data = _decode_avx(keys & 0x00FF, &dataPtr);
       Prev = _write_avx_d1(out, Data, Prev);
       Data = _decode_avx((keys & 0xFF00) >> 8, &dataPtr);
       Prev = _write_avx_d1(out + 4, Data, Prev);
@@ -1121,7 +1126,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
       Data = _decode_avx((keys & 0xFF00) >> 8, &dataPtr);
       Prev = _write_avx_d1(out + 12, Data, Prev);
 
-      keys >>= 16;
+	  keys >>= 16;
       Data = _decode_avx((keys & 0x00FF), &dataPtr);
       Prev = _write_avx_d1(out + 16, Data, Prev);
       Data = _decode_avx((keys & 0xFF00) >> 8, &dataPtr);
@@ -1144,7 +1149,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
         Prev = _write_16bit_avx_d1(out, Data, Prev);
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr + 8)));
         Prev = _write_16bit_avx_d1(out + 8, Data, Prev);
-        Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr + 16)));
+		Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr + 16)));
         Prev = _write_16bit_avx_d1(out + 16, Data, Prev);
         Data = _mm_cvtepu8_epi16(_mm_loadl_epi64((xmm_t *)(dataPtr + 24)));
         Prev = _write_16bit_avx_d1(out + 24, Data, Prev);
@@ -1153,7 +1158,9 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
 
       } else {
 
-		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES
+		// next two lines slows? down who knows why, maybe to much miss hits	
+		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES - it should hold ~ 32 compressed integers
+		_mm_prefetch(keys, _MM_HINT_T0);
          
         Data = _decode_avx(keys & 0x00FF, &dataPtr);
         Prev = _write_avx_d1(out, Data, Prev);
@@ -1166,7 +1173,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
         Data = _decode_avx((keys & 0xFF00) >> 8, &dataPtr);
         Prev = _write_avx_d1(out + 12, Data, Prev);
 
-        keys >>= 16;
+		keys >>= 16;
         Data = _decode_avx((keys & 0x00FF), &dataPtr);
         Prev = _write_avx_d1(out + 16, Data, Prev);
         Data = _decode_avx((keys & 0xFF00) >> 8, &dataPtr);
