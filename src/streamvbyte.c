@@ -1096,7 +1096,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
       nextkeys = keyPtr64[Offset + 1];
       // faster 16-bit delta since we only have 8-bit values
       if (!keys) { // 32 1-byte ints in a row
-
+		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES	
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr)));
         Prev = _write_16bit_avx_d1(out, Data, Prev);
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr + 8)));
@@ -1139,6 +1139,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
       uint64_t keys = nextkeys;
       // faster 16-bit delta since we only have 8-bit values
       if (!keys) { // 32 1-byte ints in a row
+		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr)));
         Prev = _write_16bit_avx_d1(out, Data, Prev);
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr + 8)));
@@ -1152,6 +1153,8 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
 
       } else {
 
+		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES
+         
         Data = _decode_avx(keys & 0x00FF, &dataPtr);
         Prev = _write_avx_d1(out, Data, Prev);
         Data = _decode_avx((keys & 0xFF00) >> 8, &dataPtr);
