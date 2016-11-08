@@ -429,7 +429,7 @@ uint8_t *svb_encode_avx_d1_init(const uint32_t *in,
 
 	//8 ints in row
 	while (pCurr < pEnd2) {
-		_mm_prefetch(pCurr, _MM_HINT_T0); // PREFETCH 64 BYTES
+		_mm_prefetch(pCurr + 16, _MM_HINT_T0); // PREFETCH 64 BYTES
 		a00 = _mm_load_si128(pCurr++); // first 4
 		a01 = _mm_load_si128(pCurr++); // next 4
 		a02 = _mm_load_si128(pCurr++); // next 4
@@ -494,7 +494,7 @@ uint8_t *svb_encode_avx_d1_init(const uint32_t *in,
 
 	//eventual next 4
 	while (pCurr < pEnd) {
-		_mm_prefetch(pCurr, _MM_HINT_T0);
+		_mm_prefetch(pCurr + 1, _MM_HINT_T0);
 		a00 = _mm_load_si128(pCurr++); 
 
 		COMPUTE_DELTA(last, a00, a1);
@@ -1097,7 +1097,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
       nextkeys = keyPtr64[Offset + 1];
       // faster 16-bit delta since we only have 8-bit values
       if (!keys) { // 32 1-byte ints in a row
-		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES	
+		_mm_prefetch(dataPtr + 64, _MM_HINT_T0); // PREFETCH 64 BYTES for next step	 
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr)));
         Prev = _write_16bit_avx_d1(out, Data, Prev);
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr + 8)));
@@ -1112,8 +1112,8 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
       }
 
 	  // next two lines slows down? who knows why, maybe to much miss hits
-	  _mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES - it should hold ~ 32 compressed integers
-	  _mm_prefetch(keys, _MM_HINT_T0); 
+	  _mm_prefetch(dataPtr + 64, _MM_HINT_T0); // PREFETCH 64 BYTES - it should hold ~ 32 compressed integers
+	  _mm_prefetch(keys + 8, _MM_HINT_T0); 
 
 	  Data = _decode_avx(keys & 0x00FF, &dataPtr);
       Prev = _write_avx_d1(out, Data, Prev);
@@ -1144,7 +1144,7 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
       uint64_t keys = nextkeys;
       // faster 16-bit delta since we only have 8-bit values
       if (!keys) { // 32 1-byte ints in a row
-		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES
+		_mm_prefetch(dataPtr + 64, _MM_HINT_T0); // PREFETCH 64 BYTES
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr)));
         Prev = _write_16bit_avx_d1(out, Data, Prev);
         Data = _mm_cvtepu8_epi16(_mm_lddqu_si128((xmm_t *)(dataPtr + 8)));
@@ -1159,8 +1159,8 @@ uint8_t *svb_decode_avx_d1_init(uint32_t *out, uint8_t *__restrict__ keyPtr,
       } else {
 
 		// next two lines slows? down who knows why, maybe to much miss hits	
-		_mm_prefetch(dataPtr, _MM_HINT_T0); // PREFETCH 64 BYTES - it should hold ~ 32 compressed integers
-		_mm_prefetch(keys, _MM_HINT_T0);
+		_mm_prefetch(dataPtr + 64, _MM_HINT_T0); // PREFETCH 64 BYTES - it should hold ~ 32 compressed integers
+		_mm_prefetch(keys + 8, _MM_HINT_T0);
          
         Data = _decode_avx(keys & 0x00FF, &dataPtr);
         Prev = _write_avx_d1(out, Data, Prev);
