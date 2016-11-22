@@ -1,0 +1,1 @@
+./codecs --codecs streamvbyted1,streamvbyted1_old,copy,maskedvbyte,vbyte,varintgb --uniformdynamic

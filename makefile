@@ -17,11 +17,11 @@ endif # debug
 else #intel
     CXX ?= g++-4.7
 ifeq ($(DEBUG),1)
-    CXXFLAGS = -fpic -mavx -std=c++11  -Weffc++ -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall -Wextra
-    CCFLAGS = -fpic -mavx -std=c99  -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall -Wextra
+    CXXFLAGS = -fpic -mavx -mlzcnt -std=c++11  -Weffc++ -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall -Wextra -g
+    CCFLAGS = -fpic -mavx -mlzcnt -std=c99  -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall -Wextra -g
 else
-    CXXFLAGS = -fpic -mavx -std=c++11  -Weffc++ -pedantic -O3 -Wall -Wextra
-    CCFLAGS = -fpic -mavx -std=c99 -pedantic -O3 -Wall -Wextra
+    CXXFLAGS = -fpic -mavx -mlzcnt -std=c++11  -Weffc++ -pedantic -O3 -Wall -Wextra -g
+    CCFLAGS = -fpic -mavx -mlzcnt -std=c99 -pedantic -O3 -Wall -Wextra -g
 endif #debug
 endif #intel
 
@@ -31,7 +31,7 @@ endif #intel
 
 HEADERS= $(shell ls include/*h)
 
-all: unit  testcodecs  testintegration  advancedbenchmarking benchintersection benchsearch ramtocache libSIMDCompressionAndIntersection.a
+all: unit  testcodecs  codecs testintegration  advancedbenchmarking benchintersection benchsearch ramtocache libSIMDCompressionAndIntersection.a
 	echo "please run unit tests by running the unit executable"
 
 
@@ -58,11 +58,14 @@ simdpackedsearch.o:  src/simdpackedsearch.c
 
 simdpackedselect.o:  src/simdpackedselect.c
 	$(CC) $(CCFLAGS) -c src/simdpackedselect.c -Iinclude
+	
+codecfactory.o:  src/codecfactory.c
+	$(CC) $(CCFLAGS) -c src/simdpackedselect.c -Iinclude
 
 
 
-streamvbyte.o:  src/streamvbyte.c
-	$(CC) $(CCFLAGS) -c src/streamvbyte.c -Iinclude
+streamvbyte.o:  src/streamvbyte.cpp
+	$(CXX) $(CXXFLAGS) -c src/streamvbyte.cpp -Iinclude
 
 varintdecode.o:  src/varintdecode.c
 	$(CC) $(CCFLAGS) -c src/varintdecode.c -Iinclude
@@ -100,7 +103,8 @@ unit: $(HEADERS)   src/unit.cpp $(OBJECTS)
 testcodecs: $(HEADERS) src/testcodecs.cpp   $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -Iinclude -o testcodecs src/testcodecs.cpp   $(OBJECTS)
 
-
+codecs: $(HEADERS) src/codecs.cpp   $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -Iinclude -o codecs src/codecs.cpp   $(OBJECTS)
 
 example:  $(HEADERS) example.cpp  $(OBJECTS)
 	$(CXX) $(CXXFLAGS)  -o example example.cpp  $(OBJECTS) -Iinclude
@@ -118,7 +122,7 @@ libSIMDCompressionAndIntersection.so: $(OBJECTS)
 
 
 clean:
-	rm -f *.o unit benchsearch testintegration testcodecs   simplesynth  compress uncompress budgetedtest ramtocache  entropy example benchintersection libSIMDCompressionAndIntersection.so libSIMDCompressionAndIntersection.a compflatstat
+	rm -f *.o unit benchsearch testintegration testcodecs  codecs simplesynth  compress uncompress budgetedtest ramtocache  entropy example benchintersection libSIMDCompressionAndIntersection.so libSIMDCompressionAndIntersection.a compflatstat
 
 
 

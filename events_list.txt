@@ -1,0 +1,767 @@
+oprofile: available events for CPU type "AMD64 family15h"
+
+See BIOS and Kernel Developer's Guide for AMD Family 15h Processors
+For architectures using unit masks, you may be able to specify
+unit masks by name.  See 'opcontrol' or 'operf' man page for more details.
+
+DISPATCHED_FPU_OPS: (counter: 3)
+	FPU Pipe Assignment (min count: 500)
+	Unit masks (default 0xff)
+	----------
+	0x01: Total number uops assigned to Pipe 0
+	0x02: Total number uops assigned to Pipe 1
+	0x04: Total number uops assigned to Pipe 2
+	0x08: Total number uops assigned to Pipe 3
+	0x10: Total number dual-pipe uops assigned to Pipe 0
+	0x20: Total number dual-pipe uops assigned to Pipe 1
+	0x40: Total number dual-pipe uops assigned to Pipe 2
+	0x80: Total number dual-pipe uops assigned to Pipe 3
+	0xff: All ops
+CYCLES_FPU_EMPTY: (counter: 3, 4, 5)
+	FP Scheduler Empty (min count: 500)
+RETIRED_SSE_OPS: (counter: 3)
+	Retired SSE/BNI Ops (min count: 500)
+	Unit masks (default 0xff)
+	----------
+	0x01: Single Precision add/subtract FLOPS
+	0x02: Single precision multiply FLOPS
+	0x04: Single precision divide/square root FLOPS
+	0x08: Single precision multiply-add FLOPS. Multiply-add counts as 2 FLOPS
+	0x10: Double precision add/subtract FLOPS
+	0x20: Double precision multiply FLOPS
+	0x40: Double precision divide/square root FLOPS
+	0x80: Double precision multiply-add FLOPS. Multiply-add counts as 2 FLOPS
+MOVE_SCALAR_OPTIMIZATION: (counter: 3)
+	Number of Move Elimination and Scalar Op Optimization (min count: 500)
+	Unit masks (default 0xc)
+	----------
+	0x01: Number of SSE Move Ops
+	0x02: Number of SSE Move Ops eliminated
+	0x04: Number of Ops that are candidates for optimization
+	0x08: Number of Scalar ops optimized
+RETIRED_SERIALIZING_OPS: (counter: 3, 4, 5)
+	Retired Serializing Ops (min count: 500)
+	Unit masks (default 0xf)
+	----------
+	0x01: SSE bottom-executing uops retired
+	0x02: SSE control word mispredict traps due to mispredictions
+	0x04: x87 bottom-executing uops retired
+	0x08: x87 control word mispredict traps due to mispredictions
+BOTTOM_EXECUTE_OP: (counter: 3, 4, 5)
+	Number of Cycles that a Bottom-Execute uop is in the FP Scheduler (min count: 500)
+SEGMENT_REGISTER_LOADS: (counter: all)
+	Segment Register Loads (min count: 500)
+	Unit masks (default 0x7f)
+	----------
+	0x01: ES register
+	0x02: CS register
+	0x04: SS register
+	0x08: DS register
+	0x10: FS register
+	0x20: GS register
+	0x40: HS register
+PIPELINE_RESTART_DUE_TO_SELF_MODIFYING_CODE: (counter: all)
+	Pipeline Restart Due to Self-Modifying Code (min count: 500)
+PIPELINE_RESTART_DUE_TO_PROBE_HIT: (counter: all)
+	Pipeline Restart Due to Probe Hit (min count: 500)
+LOAD_Q_STORE_Q_FULL: (counter: 0, 1, 2)
+	Load Queue/Store Queue Full (min count: 500)
+	Unit masks (default 0x3)
+	----------
+	0x01: Cycles that the load buffer is full
+	0x02: Cycles that the store buffer is full
+LOCKED_OPS: (counter: all)
+	Locked Operations (min count: 500)
+	Unit masks (default 0x1)
+	----------
+	0x01: Number of locked instructions executed
+	0x04: Cycles spent non-speculative phase (including cache miss penalty)
+	0x08: Cycles waiting for a cache hit (cache miss penalty)
+RETIRED_CLFLUSH_INSTRUCTIONS: (counter: all)
+	Retired CLFLUSH Instructions (min count: 500)
+RETIRED_CPUID_INSTRUCTIONS: (counter: all)
+	Retired CPUID Instructions (min count: 500)
+LS_DISPATCH: (counter: all)
+	LS Dispatch (min count: 500)
+	Unit masks (default 0x7)
+	----------
+	0x01: Loads
+	0x02: Stores
+	0x04: Load-op-Stores
+CANCELLED_STORE_TO_LOAD: (counter: all)
+	Canceled Store to Load Forward Operations (min count: 500)
+	Unit masks (default 0x1)
+	----------
+	0x01: Store is smaller than load or different starting byte but partial overlap
+SMIS_RECEIVED: (counter: all)
+	SMIs Received (min count: 500)
+EXECUTED_CFLUSH_INST: (counter: all)
+	Executed CLFLUSH Instructions (min count: 500)
+DATA_CACHE_ACCESSES: (counter: all)
+	Data Cache Accesses (min count: 500)
+DATA_CACHE_MISSES: (counter: all)
+	Data Cache Misses (min count: 500)
+	Unit masks (default 0x1)
+	----------
+	0x01: First data cache miss or streaming store to a 64B cache line
+	0x02: First streaming store to a 64B cache line
+DATA_CACHE_REFILLS_FROM_L2_OR_NORTHBRIDGE: (counter: all)
+	Data Cache Refills from L2 or System (min count: 500)
+	Unit masks (default 0xb)
+	----------
+	0x01: Fill with good data. (Final valid status is valid)
+	0x02: Early valid status turned out to be invalid
+	0x08: Fill with read data error
+DATA_CACHE_REFILLS_FROM_NORTHBRIDGE: (counter: 0, 1, 2)
+	Data Cache Refills from System (min count: 500)
+UNIFIED_TLB_HIT: (counter: 0, 1, 2)
+	Unified TLB Hit (min count: 50000)
+	Unit masks (default 0x77)
+	----------
+	0x01: 4 KB unified TLB hit for data
+	0x02: 2 MB unified TLB hit for data
+	0x04: 1 GB unified TLB hit for data
+	0x10: 4 KB unified TLB hit for instruction
+	0x20: 2 MB unified TLB hit for instruction
+	0x40: 1 GB unified TLB hit for instruction
+	0x07: All DTLB hits
+	0x70: All ITLB hits
+	0x77: All DTLB and ITLB hits
+UNIFIED_TLB_MISS: (counter: 0, 1, 2)
+	Unified TLB Miss (min count: 500)
+	Unit masks (default 0x77)
+	----------
+	0x01: 4 KB unified TLB miss for data
+	0x02: 2 MB unified TLB miss for data
+	0x04: 1 GB unified TLB miss for data
+	0x10: 4 KB unified TLB miss for instruction
+	0x20: 2 MB unified TLB miss for instruction
+	0x40: 1 GB unified TLB miss for instruction
+	0x07: All DTLB misses
+	0x70: All ITLB misses
+	0x77: All DTLB and ITLB misses
+MISALIGNED_ACCESSES: (counter: all)
+	Misaligned Accesses (min count: 500)
+PREFETCH_INSTRUCTIONS_DISPATCHED: (counter: all)
+	Prefetch Instructions Dispatched (min count: 500)
+	Unit masks (default 0x7)
+	----------
+	0x01: Load (Prefetch, PrefetchT0/T1/T2)
+	0x02: Store (PrefetchW)
+	0x04: NTA (PrefetchNTA)
+INEFFECTIVE_SW_PREFETCHES: (counter: all)
+	Ineffective Software Prefetches (min count: 500)
+	Unit masks (default 0x9)
+	----------
+	0x01: Software prefetch hit in L1 data cache
+	0x08: Software prefetch hit in the L2
+MEMORY_REQUESTS: (counter: 0, 1, 2)
+	Memory Requests by Type (min count: 500)
+	Unit masks (default 0x83)
+	----------
+	0x01: Requests to non-cacheable (UC) memory
+	0x02: Requests to write-combining (WC) memory
+	0x80: Streaming store (SS) requests
+DATA_PREFETCHER: (counter: 0, 1, 2)
+	Data Prefetcher (min count: 500)
+	Unit masks (default 0x2)
+	----------
+	0x02: Prefetch attempts
+MAB_REQS: (counter: 0, 1, 2)
+	MAB Requests (min count: 500)
+	Unit masks (default 0x1)
+	----------
+	0x01: MAB ID bit 0
+	0x02: MAB ID bit 1
+	0x04: MAB ID bit 2
+	0x08: MAB ID bit 3
+	0x10: MAB ID bit 4
+	0x20: MAB ID bit 5
+	0x40: MAB ID bit 6
+	0x80: MAB ID bit 7
+MAB_WAIT: (counter: 0, 1, 2)
+	MAB Wait Cycles (min count: 500)
+	Unit masks (default 0x1)
+	----------
+	0x01: MAB ID bit 0
+	0x02: MAB ID bit 1
+	0x04: MAB ID bit 2
+	0x08: MAB ID bit 3
+	0x10: MAB ID bit 4
+	0x20: MAB ID bit 5
+	0x40: MAB ID bit 6
+	0x80: MAB ID bit 7
+SYSTEM_READ_RESPONSES: (counter: 0, 1, 2)
+	Response From System on Cache Refills (min count: 500)
+	Unit masks (default 0x3f)
+	----------
+	0x01: Exclusive
+	0x02: Modified
+	0x04: Shared
+	0x08: Owned
+	0x10: Data Error
+	0x20: Modified unwritten
+OCTWORD_WRITE_TRANSFERS: (counter: 0, 1, 2)
+	Octwords Written to System (min count: 500)
+	Unit masks (default 0x1)
+	----------
+	0x01: Octword write transfer
+CPU_CLK_UNHALTED: (counter: 0, 1, 2)
+	CPU Clocks not Halted (min count: 50000)
+REQUESTS_TO_L2: (counter: 0, 1, 2)
+	Requests to L2 Cache (min count: 500)
+	Unit masks (default 0x47)
+	----------
+	0x01: IC fill
+	0x02: DC fill
+	0x04: TLB fill (page table walks)
+	0x08: NB probe request
+	0x10: Canceled request
+	0x40: L2 cache prefetcher request
+L2_CACHE_MISS: (counter: 0, 1, 2)
+	L2 Cache Misses (min count: 500)
+	Unit masks (default 0x17)
+	----------
+	0x01: IC fill
+	0x02: DC fill (includes possible replays, whereas PMCx041 does not)
+	0x04: TLB page table walks
+	0x10: L2 cache prefetcher request
+L2_CACHE_FILL_WRITEBACK: (counter: 0, 1, 2)
+	L2 Fill/Writeback (min count: 500)
+	Unit masks (default 0x7)
+	----------
+	0x01: L2 fills from system
+	0x02: L2 Writebacks to system (Clean and Dirty)
+	0x04: L2 Clean Writebacks to system
+PAGE_SPLINTERING: (counter: 0, 1, 2)
+	Page Splintering (min count: 500)
+	Unit masks (default 0x7)
+	----------
+	0x01: Guest page size is larger than host page size when nested paging is enabled
+	0x02: Splintering due to MTRRs, IORRs, APIC, TOMs or other special address region
+	0x04: Host page size is larger than the guest page size
+L2_PREFETCHER_TRIGGER: (counter: 0, 1, 2)
+	L2 Prefetcher Trigger Events (min count: 500)
+	Unit masks (default 0x3)
+	----------
+	0x01: Load L1 miss seen by prefetcher
+	0x02: Store L1 miss seen by prefetcher
+INSTRUCTION_CACHE_FETCHES: (counter: 0, 1, 2)
+	Instruction Cache Fetches (min count: 500)
+INSTRUCTION_CACHE_MISSES: (counter: 0, 1, 2)
+	Instruction Cache Misses (min count: 500)
+INSTRUCTION_CACHE_REFILLS_FROM_L2: (counter: 0, 1, 2)
+	Instruction Cache Refills from L2 (min count: 500)
+INSTRUCTION_CACHE_REFILLS_FROM_SYSTEM: (counter: 0, 1, 2)
+	Instruction Cache Refills from System (min count: 500)
+L1_ITLB_MISS_AND_L2_ITLB_HIT: (counter: 0, 1, 2)
+	L1 ITLB Miss, L2 ITLB Hit (min count: 500)
+L1_ITLB_MISS_AND_L2_ITLB_MISS: (counter: 0, 1, 2)
+	L1 ITLB Miss, L2 ITLB Miss (min count: 500)
+	Unit masks (default 0x7)
+	----------
+	0x01: Instruction fetches to a 4K page
+	0x02: Instruction fetches to a 2M page
+	0x04: Instruction fetches to a 1G page
+PIPELINE_RESTART_DUE_TO_INSTRUCTION_STREAM_PROBE: (counter: 0, 1, 2)
+	Pipeline Restart Due to Instruction Stream Probe (min count: 500)
+INSTRUCTION_FETCH_STALL: (counter: 0, 1, 2)
+	Instruction Fetch Stall (min count: 500)
+RETURN_STACK_HITS: (counter: 0, 1, 2)
+	Return Stack Hits (min count: 500)
+RETURN_STACK_OVERFLOWS: (counter: 0, 1, 2)
+	Return Stack Overflows (min count: 500)
+INSTRUCTION_CACHE_VICTIMS: (counter: 0, 1, 2)
+	Instruction Cache Victims (min count: 500)
+INSTRUCTION_CACHE_INVALIDATED: (counter: 0, 1, 2)
+	Instruction Cache Lines Invalidated (min count: 500)
+	Unit masks (default 0xf)
+	----------
+	0x01: Non-SMC invalidating probe that missed on in-flight instructions
+	0x02: Non-SMC invalidating probe that hit on in-flight instructions
+	0x04: SMC invalidating probe that missed on in-flight instructions
+	0x08: SMC invalidating probe that hit on in-flight instructions
+ITLB_RELOADS: (counter: 0, 1, 2)
+	ITLB Reloads (min count: 500)
+ITLB_RELOADS_ABORTED: (counter: 0, 1, 2)
+	ITLB Reloads Aborted (min count: 500)
+RETIRED_INSTRUCTIONS: (counter: all)
+	Retired Instructions (min count: 50000)
+RETIRED_UOPS: (counter: all)
+	Retired uops (min count: 50000)
+RETIRED_BRANCH_INSTRUCTIONS: (counter: all)
+	Retired Branch Instructions (min count: 500)
+RETIRED_MISPREDICTED_BRANCH_INSTRUCTIONS: (counter: all)
+	Retired Mispredicted Branch Instructions (min count: 500)
+RETIRED_TAKEN_BRANCH_INSTRUCTIONS: (counter: all)
+	Retired Taken Branch Instructions (min count: 500)
+RETIRED_TAKEN_BRANCH_INSTRUCTIONS_MISPREDICTED: (counter: all)
+	Retired Taken Branch Instructions Mispredicted (min count: 500)
+RETIRED_FAR_CONTROL_TRANSFERS: (counter: all)
+	Retired Far Control Transfers (min count: 500)
+RETIRED_BRANCH_RESYNCS: (counter: all)
+	Retired Branch Resyncs (min count: 500)
+RETIRED_NEAR_RETURNS: (counter: all)
+	Retired Near Returns (min count: 500)
+RETIRED_NEAR_RETURNS_MISPREDICTED: (counter: all)
+	Retired Near Returns Mispredicted (min count: 500)
+RETIRED_INDIRECT_BRANCHES_MISPREDICTED: (counter: all)
+	Retired Indirect Branches Mispredicted (min count: 500)
+RETIRED_MMX_FP_INSTRUCTIONS: (counter: all)
+	Retired MMX/FP Instructions (min count: 500)
+	Unit masks (default 0x7)
+	----------
+	0x01: x87 instructions
+	0x02: MMX(tm) instructions
+	0x04: SSE instructions (SSE,SSE2,SSE3,SSSE3,SSE4A,SSE4.1,SSE4.2,AVX,XOP,FMA4)
+INTERRUPTS_MASKED_CYCLES: (counter: all)
+	Interrupts-Masked Cycles (min count: 500)
+INTERRUPTS_MASKED_CYCLES_WITH_INTERRUPT_PENDING: (counter: all)
+	Interrupts-Masked Cycles with Interrupt Pending (min count: 500)
+INTERRUPTS_TAKEN: (counter: all)
+	Interrupts Taken (min count: 500)
+DECODER_EMPTY: (counter: 0, 1, 2)
+	Decoder Empty (min count: 500)
+DISPATCH_STALLS: (counter: 0, 1, 2)
+	Dispatch Stalls (min count: 500)
+DISPATCH_STALL_FOR_SERIALIZATION: (counter: 0, 1, 2)
+	Microsequencer Stall due to Serialization (min count: 500)
+DISPATCH_STALL_FOR_RETIRE_QUEUE_FULL: (counter: 0, 1, 2)
+	Dispatch Stall for Instruction Retire Q Full (min count: 500)
+DISPATCH_STALL_FOR_INT_SCHED_QUEUE_FULL: (counter: 0, 1, 2)
+	Dispatch Stall for Integer Scheduler Queue Full (min count: 500)
+DISPATCH_STALL_FOR_FPU_FULL: (counter: 0, 1, 2)
+	Dispatch Stall for FP Scheduler Queue Full (min count: 500)
+DISPATCH_STALL_FOR_LDQ_FULL: (counter: 0, 1, 2)
+	Dispatch Stall for LDQ Full (min count: 500)
+MICROSEQ_STALL_WAITING_FOR_ALL_QUIET: (counter: 0, 1, 2)
+	Microsequencer Stall Waiting for All Quiet (min count: 500)
+FPU_EXCEPTIONS: (counter: all)
+	FPU Exceptions (min count: 500)
+	Unit masks (default 0x1f)
+	----------
+	0x01: Total microfaults
+	0x02: Total microtraps
+	0x04: Int2Ext faults
+	0x08: Ext2Int faults
+	0x10: Bypass faults
+DR0_BREAKPOINTS: (counter: all)
+	DR0 Breakpoint Match (min count: 500)
+DR1_BREAKPOINTS: (counter: all)
+	DR1 Breakpoint Match (min count: 500)
+DR2_BREAKPOINTS: (counter: all)
+	DR2 Breakpoint Match (min count: 500)
+DR3_BREAKPOINTS: (counter: all)
+	DR3 Breakpoint Match (min count: 500)
+IBS_OPS_TAGGED: (counter: all)
+	Tagged IBS Ops (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x01: Number of ops tagged by IBS
+	0x02: Number of ops tagged by IBS that retired
+	0x04: Number of times op could not be tagged by IBS because of previous tagged op that has 
+              not retired
+DISPATCH_STALL_FOR_STQ_FULL: (counter: all)
+	Dispatch Stall for STQ Full (min count: 500)
+IBS_FETCH_ALL: (ext: ibs_fetch)
+	All IBS fetch samples (min count: 50000)
+IBS_FETCH_KILLED: (ext: ibs_fetch)
+	IBS fetch killed (min count: 50000)
+IBS_FETCH_ATTEMPTED: (ext: ibs_fetch)
+	IBS fetch attempted (min count: 50000)
+IBS_FETCH_COMPLETED: (ext: ibs_fetch)
+	IBS fetch completed (min count: 50000)
+IBS_FETCH_ABORTED: (ext: ibs_fetch)
+	IBS fetch aborted (min count: 50000)
+IBS_FETCH_ITLB_HITS: (ext: ibs_fetch)
+	IBS ITLB hit (min count: 50000)
+IBS_FETCH_L1_ITLB_MISSES_L2_ITLB_HITS: (ext: ibs_fetch)
+	IBS L1 ITLB misses (and L2 ITLB hits) (min count: 50000)
+IBS_FETCH_L1_ITLB_MISSES_L2_ITLB_MISSES: (ext: ibs_fetch)
+	IBS L1 L2 ITLB miss (min count: 50000)
+IBS_FETCH_ICACHE_MISSES: (ext: ibs_fetch)
+	IBS instruction cache misses (min count: 50000)
+IBS_FETCH_ICACHE_HITS: (ext: ibs_fetch)
+	IBS instruction cache hit (min count: 50000)
+IBS_FETCH_4K_PAGE: (ext: ibs_fetch)
+	IBS 4K page translation (min count: 50000)
+IBS_FETCH_2M_PAGE: (ext: ibs_fetch)
+	IBS 2M page translation (min count: 50000)
+IBS_FETCH_LATENCY: (ext: ibs_fetch)
+	IBS fetch latency (min count: 50000)
+IBS_OP_ALL: (ext: ibs_op)
+	All IBS op samples (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_TAG_TO_RETIRE: (ext: ibs_op)
+	IBS tag-to-retire cycles (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_COMP_TO_RET: (ext: ibs_op)
+	IBS completion-to-retire cycles (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_BRANCH_RETIRED: (ext: ibs_op)
+	IBS branch op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_MISPREDICTED_BRANCH: (ext: ibs_op)
+	IBS mispredicted branch op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_TAKEN_BRANCH: (ext: ibs_op)
+	IBS taken branch op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_MISPREDICTED_BRANCH_TAKEN: (ext: ibs_op)
+	IBS mispredicted taken branch op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_RETURNS: (ext: ibs_op)
+	IBS return op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_MISPREDICTED_RETURNS: (ext: ibs_op)
+	IBS mispredicted return op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_RESYNC: (ext: ibs_op)
+	IBS resync op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_ALL_LOAD_STORE: (ext: ibs_op)
+	IBS all load store ops (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_LOAD: (ext: ibs_op)
+	IBS load ops (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_STORE: (ext: ibs_op)
+	IBS store ops (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L1_DTLB_HITS: (ext: ibs_op)
+	IBS L1 DTLB hit (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L1_DTLB_MISS_L2_DTLB_HIT: (ext: ibs_op)
+	IBS L1 DTLB misses L2 hits (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L1_L2_DTLB_MISS: (ext: ibs_op)
+	IBS L1 and L2 DTLB misses (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_DATA_CACHE_MISS: (ext: ibs_op)
+	IBS data cache misses (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_DATA_HITS: (ext: ibs_op)
+	IBS data cache hits (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_MISALIGNED_DATA_ACC: (ext: ibs_op)
+	IBS misaligned data access (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_BANK_CONF_LOAD: (ext: ibs_op)
+	IBS bank conflict on load op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_BANK_CONF_STORE: (ext: ibs_op)
+	IBS bank conflict on store op (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_FORWARD: (ext: ibs_op)
+	IBS store-to-load forwarded (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_CANCELLED: (ext: ibs_op)
+	IBS store-to-load cancelled (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_DCUC_MEM_ACC: (ext: ibs_op)
+	IBS UC memory access (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_DCWC_MEM_ACC: (ext: ibs_op)
+	IBS WC memory access (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_LOCKED: (ext: ibs_op)
+	IBS locked operation (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_MAB_HIT: (ext: ibs_op)
+	IBS MAB hit (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L1_DTLB_4K: (ext: ibs_op)
+	IBS L1 DTLB 4K page (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L1_DTLB_2M: (ext: ibs_op)
+	IBS L1 DTLB 2M page (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L1_DTLB_1G: (ext: ibs_op)
+	IBS L1 DTLB 1G page (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L2_DTLB_4K: (ext: ibs_op)
+	IBS L2 DTLB 4K page (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L2_DTLB_2M: (ext: ibs_op)
+	IBS L2 DTLB 2M page (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_L2_DTLB_1G: (ext: ibs_op)
+	IBS L2 DTLB 1G page (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_DC_LOAD_LAT: (ext: ibs_op)
+	IBS data cache miss load latency (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_LOCAL_ONLY: (ext: ibs_op)
+	IBS Northbridge local (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_REMOTE_ONLY: (ext: ibs_op)
+	IBS Northbridge remote (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_LOCAL_L3: (ext: ibs_op)
+	IBS Northbridge local L3 (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_LOCAL_CACHE: (ext: ibs_op)
+	IBS Northbridge local core L1 or L2 cache (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_REMOTE_CACHE: (ext: ibs_op)
+	IBS Northbridge local core L1, L2, L3 cache (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_LOCAL_DRAM: (ext: ibs_op)
+	IBS Northbridge local DRAM (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_REMOTE_DRAM: (ext: ibs_op)
+	IBS Northbridge remote DRAM (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_LOCAL_OTHER: (ext: ibs_op)
+	IBS Northbridge local APIC MMIO Config PCI (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_REMOTE_OTHER: (ext: ibs_op)
+	IBS Northbridge remote APIC MMIO Config PCI (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_CACHE_MODIFIED: (ext: ibs_op)
+	IBS Northbridge cache modified state (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_CACHE_OWNED: (ext: ibs_op)
+	IBS Northbridge cache owned state (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_LOCAL_CACHE_LAT: (ext: ibs_op)
+	IBS Northbridge local cache latency (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log
+IBS_OP_NB_REMOTE_CACHE_LAT: (ext: ibs_op)
+	IBS Northbridge remote cache latency (min count: 50000)
+	Unit masks (default 0x1)
+	----------
+	0x00: Using IBS OP cycle count mode
+	0x01: Using IBS OP dispatch count mode
+	0x02: Enable IBS OP Memory Access Log
+	0x04: Enable IBS OP Branch Target Address Log

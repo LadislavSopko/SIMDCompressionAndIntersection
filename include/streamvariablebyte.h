@@ -14,8 +14,8 @@ namespace SIMDCompressionLib {
  * StreamVByte is an integer CODEC invented by Nathan Kurz.
  */
 
-extern "C" {
-uint64_t svb_encode(uint8_t *out, const uint32_t *in, uint32_t count, int delta,
+//extern "C" {
+uint64_t svb_encode(uint8_t *out,  uint32_t *in, uint32_t count, int delta,
                     int type);
 uint64_t svb_decode(uint32_t *out, uint8_t *in, int delta, int type);
 uint8_t *svb_decode_avx_simple(uint32_t *out, uint8_t *keyPtr, uint8_t *dataPtr,
@@ -35,7 +35,7 @@ uint8_t *svb_insert_scalar_d1_init(uint8_t *keyPtr, uint8_t *dataPtr,
                                    uint32_t *position);
 uint8_t *svb_append_scalar_d1(uint8_t *keyPtr, uint8_t *dataPtr,
                               size_t sizebytes, size_t count, uint32_t delta);
-}
+//}
 
 /**
  * Regular StreamVByte (no differential coding)
@@ -55,7 +55,10 @@ public:
                               uint32_t *out, size_t &nvalue) {
     
 	  uint8_t* ptr;
-	  (uint64_t)(*(uint64_t*)(&ptr)) = svb_decode(out, (uint8_t *)in, 0, 5);
+	
+	  uint64_t v = svb_decode(out, (uint8_t *)in, 0, 5);
+				      
+	 *((uint64_t*)(&ptr)) = v;
 
 	  return reinterpret_cast<const uint32_t *>(
 		  (reinterpret_cast<uintptr_t>(ptr) +
@@ -113,7 +116,7 @@ public:
                               uint32_t *out, size_t &nvalue) {
 	  ++in;
 	  uint8_t* ptr;
-	  (uint64_t)(*(uint64_t*)(&ptr)) = svb_decode(out, (uint8_t *)in, 1, 5);
+	  *((uint64_t*)(&ptr)) = svb_decode(out, (uint8_t *)in, 1, 5);
 
 	  return reinterpret_cast<const uint32_t *>(
 		  (reinterpret_cast<uintptr_t>(ptr) +
@@ -294,7 +297,7 @@ public:
 		uint32_t *out, size_t &nvalue) {
 		++in;
 		uint8_t* ptr;
-		(uint64_t)(*(uint64_t*)(&ptr)) = svb_decode(out, (uint8_t *)in, 1, 5);
+		*((uint64_t*)(&ptr)) = svb_decode(out, (uint8_t *)in, 1, 5);
 
 		return reinterpret_cast<const uint32_t *>(
 			(reinterpret_cast<uintptr_t>(ptr) +
